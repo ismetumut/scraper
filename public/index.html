@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Navigator Scraper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>SN Scraper</h1>
+      <span>Sales Navigator Lead Extractor</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="#" class="active" data-page="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="#" data-page="new-scrape">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          New Scrape
+        </a>
+      </li>
+      <li>
+        <a href="#" data-page="my-lists">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          My Lists
+        </a>
+      </li>
+      <li>
+        <a href="#" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- ==================== DASHBOARD PAGE ==================== -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <h2>Dashboard</h2>
+        <button class="btn btn-primary" onclick="showPage('new-scrape')">+ New Scrape</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Jobs</div>
+          <div class="stat-value primary" id="stat-total-jobs">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Leads</div>
+          <div class="stat-value success" id="stat-total-leads">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Scrapes</div>
+          <div class="stat-value warning" id="stat-active">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completed</div>
+          <div class="stat-value" id="stat-completed">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Scraping Jobs</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>List Name</th>
+                <th>Status</th>
+                <th>Leads</th>
+                <th>Progress</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-table-body">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                    <h3>No scraping jobs yet</h3>
+                    <p>Start your first scrape to see results here</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== NEW SCRAPE PAGE ==================== -->
+    <div id="page-new-scrape" class="page" style="display:none;">
+      <div class="page-header">
+        <h2>New Scrape</h2>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Scrape Sales Navigator List
+        </div>
+        <p style="color: var(--text-secondary); font-size:14px; margin-bottom:20px;">
+          Paste your Sales Navigator saved list URL below. The scraper will extract all leads with their details.
+        </p>
+        <div class="form-row">
+          <div class="form-group" style="flex:3;">
+            <label>Sales Navigator List URL</label>
+            <input type="text" id="input-list-url" placeholder="https://www.linkedin.com/sales/lists/people/123456789">
+          </div>
+          <div class="form-group" style="flex:1; max-width:140px;">
+            <label>Max Pages</label>
+            <input type="number" id="input-max-pages" value="25" min="1" max="100">
+          </div>
+          <button class="btn btn-primary" id="btn-start-scrape" onclick="startScrape()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="5,3 19,12 5,21 5,3"/></svg>
+            Start Scraping
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Saved Lists (Auto-Detect)
+        </div>
+        <p style="color: var(--text-secondary); font-size:14px; margin-bottom:16px;">
+          Automatically fetch your saved lists from Sales Navigator.
+        </p>
+        <button class="btn btn-secondary" id="btn-fetch-lists" onclick="fetchSavedLists()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Fetch My Lists
+        </button>
+        <div id="saved-lists-container" style="margin-top:16px;"></div>
+      </div>
+
+      <div class="card" style="border-color: var(--primary); border-style: dashed;">
+        <div class="card-title" style="color: var(--primary);">How to Get Your List URL</div>
+        <ol style="color: var(--text-secondary); font-size:14px; line-height:2; padding-left:20px;">
+          <li>Go to <strong>LinkedIn Sales Navigator</strong></li>
+          <li>Click <strong>"Lists"</strong> in the top navigation</li>
+          <li>Open the list you want to scrape</li>
+          <li>Copy the URL from your browser's address bar</li>
+          <li>Paste it above and hit <strong>Start Scraping</strong></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- ==================== MY LISTS PAGE ==================== -->
+    <div id="page-my-lists" class="page" style="display:none;">
+      <div class="page-header">
+        <h2>My Lists</h2>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>List Name</th>
+                <th>Status</th>
+                <th>Leads</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="my-lists-table-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SETTINGS PAGE ==================== -->
+    <div id="page-settings" class="page" style="display:none;">
+      <div class="page-header">
+        <h2>Settings</h2>
+      </div>
+
+      <div class="card">
+        <div class="card-title">LinkedIn Authentication</div>
+        <p style="color: var(--text-secondary); font-size:14px; margin-bottom:20px;">
+          Enter your LinkedIn session cookie for authentication. You can find this in your browser's developer tools.
+        </p>
+        <div class="settings-form">
+          <div class="form-group">
+            <label>li_at Cookie</label>
+            <input type="password" id="setting-cookie" placeholder="Your li_at session cookie">
+          </div>
+          <div class="form-group">
+            <label>CSRF Token (JSESSIONID)</label>
+            <input type="password" id="setting-csrf" placeholder="Your JSESSIONID / CSRF token">
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Scraping Configuration</div>
+        <div class="settings-form">
+          <div class="form-group">
+            <label>Min Delay Between Pages (ms)</label>
+            <input type="number" id="setting-delay-min" value="2000" min="1000" max="10000">
+          </div>
+          <div class="form-group">
+            <label>Max Delay Between Pages (ms)</label>
+            <input type="number" id="setting-delay-max" value="5000" min="2000" max="15000">
+          </div>
+          <div class="form-group">
+            <label>Default Max Pages Per Run</label>
+            <input type="number" id="setting-max-pages" value="25" min="1" max="100">
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--warning); border-style: dashed;">
+        <div class="card-title" style="color: var(--warning);">How to Get Your li_at Cookie</div>
+        <ol style="color: var(--text-secondary); font-size:14px; line-height:2.2; padding-left:20px;">
+          <li>Open <strong>LinkedIn</strong> in Chrome and log in</li>
+          <li>Press <strong>F12</strong> to open Developer Tools</li>
+          <li>Go to <strong>Application</strong> tab > <strong>Cookies</strong> > <strong>linkedin.com</strong></li>
+          <li>Find the cookie named <strong>li_at</strong> and copy its value</li>
+          <li>Also find <strong>JSESSIONID</strong> and copy that too</li>
+          <li>Paste both values above and click <strong>Save</strong></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leads Detail Modal -->
+  <div class="modal-overlay" id="leads-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Leads</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+      </div>
+      <div class="modal-footer" id="modal-footer">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
