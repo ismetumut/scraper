@@ -71,6 +71,72 @@ HEADLESS=true
 | GET | `/api/export/:jobId/csv` | CSV export |
 | GET | `/api/export/:jobId/json` | JSON export |
 
+## Gunluk Baglanti Takibi (Yeni Baglanti Bildirimi)
+
+Belirledigin 1. derece baglantilarinin (baglanti listesi herkese acik olanlarin)
+her gun yeni ekledigi baglantilari otomatik tespit edip e-posta ile bildirir.
+
+### 1. Takip edilecek kisileri tanimla
+
+`config/connections-targets.json` dosyasini duzenle:
+
+```json
+[
+  {
+    "name": "Ahmet Yilmaz",
+    "profileUrl": "https://www.linkedin.com/in/ahmet-yilmaz/"
+  },
+  {
+    "name": "Ayse Demir",
+    "profileUrl": "https://www.linkedin.com/in/ayse-demir/"
+  }
+]
+```
+
+> Not: Bir kisinin baglanti listesini gorebilmek icin o kisinin
+> "Baglantilarimi kim gorebilir" ayarini "Herkes" yapmis olmasi gerekir.
+
+### 2. .env ayarlarini tamamla
+
+`.env` dosyasina LinkedIn cookie bilgilerinin yaninda SMTP ve bildirim
+e-posta adresini ekle:
+
+```env
+NOTIFY_EMAIL=ismetumut@gmail.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=your_email@gmail.com
+```
+
+> Gmail kullaniyorsan normal sifre yerine bir "Uygulama Sifresi" (App Password)
+> olusturman gerekir.
+
+### 3. Scripti calistir
+
+```bash
+npm run connections:check
+```
+
+Script her takip edilen kisi icin:
+
+1. Baglanti listesini cekip `data/connections/<kisi>/<YYYY-MM-DD>.json` olarak kaydeder.
+2. Bir onceki kayitla karsilastirip (diff) yeni eklenen baglantilari bulur.
+3. Tum kisiler icin ozet bir rapor olusturup `NOTIFY_EMAIL` adresine mail atar.
+
+### 4. Otomatik (gunluk) calistirma
+
+`.github/workflows/daily-connections-check.yml` dosyasi her gun 06:00 UTC'de
+otomatik calisacak sekilde ayarlanmistir (GitHub Actions). Repo ayarlarindan
+asagidaki secrets'lari eklemen gerekir:
+
+- `LINKEDIN_SESSION_COOKIE`, `LINKEDIN_CSRF_TOKEN`
+- `NOTIFY_EMAIL`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+
+İstersen Actions sekmesinden "Run workflow" diyerek manuel de calistirabilirsin.
+
 ## Tech Stack
 
 - **Backend:** Node.js, Express
