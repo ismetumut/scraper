@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const scraperRoutes = require('./routes/scraper');
 const exportRoutes = require('./routes/export');
+const connectionsRoutes = require('./routes/connections');
 
 const app = express();
 const PORT = process.env.PORT || 3099;
@@ -15,6 +16,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // API routes
 app.use('/api/scraper', scraperRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/connections', connectionsRoutes);
 
 // Serve dashboard
 app.get('/', (req, res) => {

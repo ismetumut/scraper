@@ -13,6 +13,9 @@ function showPage(pageName) {
   if (pageName === 'dashboard' || pageName === 'my-lists') {
     loadJobs();
   }
+  if (pageName === 'connections') {
+    loadConnections();
+  }
 }
 
 // Nav click handlers
@@ -356,6 +359,159 @@ async function deleteJob(jobId) {
   } catch (err) {
     showToast('Failed to delete job', 'error');
   }
+}
+
+// ==================== CONNECTION TRACKER ====================
+
+let connectionsPollInterval = null;
+
+async function loadConnections() {
+  try {
+    const { reports, runState } = await apiGet('/connections/results');
+    renderConnectionsTable(reports || []);
+    updateRunButton(runState);
+
+    // If a check is running, keep polling until it finishes.
+    if (runState && runState.running && !connectionsPollInterval) {
+      connectionsPollInterval = setInterval(async () => {
+        const { runState: rs } = await apiGet('/connections/status');
+        updateRunButton(rs);
+        if (rs && !rs.running) {
+          clearInterval(connectionsPollInterval);
+          connectionsPollInterval = null;
+          showToast(rs.lastError ? `Kontrol hatasi: ${rs.lastError}` : 'Kontrol tamamlandi!', rs.lastError ? 'error' : 'success');
+          loadConnections();
+        }
+      }, 4000);
+    }
+  } catch (err) {
+    console.error('Failed to load connections:', err);
+  }
+}
+
+function updateRunButton(runState) {
+  const btn = document.getElementById('btn-run-check');
+  if (!btn) return;
+  if (runState && runState.running) {
+    btn.disabled = true;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="spin"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Kontrol ediliyor...';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Bugünü Kontrol Et';
+  }
+}
+
+function renderConnectionsTable(reports) {
+  const tbody = document.getElementById('connections-table-body');
+
+  if (!reports.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="5">
+        <div class="empty-state">
+          <h3>Henüz kimse takip edilmiyor</h3>
+          <p>Yukarıdan bir kişi ekleyerek başla</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = reports.map(r => {
+    const newCount = (r.newConnections || []).length;
+    const newCell = r.error
+      ? `<span style="color:var(--danger);">Hata</span>`
+      : newCount > 0
+        ? `<span class="badge badge-completed"><span class="badge-dot"></span> ${newCount} yeni</span>`
+        : `<span style="color:var(--text-muted);">0</span>`;
+
+    return `
+    <tr>
+      <td>
+        <strong>${escapeHtml(r.name || 'Bilinmiyor')}</strong>
+        <div style="font-size:11px;"><a href="${escapeHtml(r.profileUrl || '#')}" target="_blank" style="color:var(--text-muted);">profil</a></div>
+      </td>
+      <td><strong>${(r.totalConnections || 0).toLocaleString()}</strong></td>
+      <td>${newCell}</td>
+      <td style="font-size:13px;color:var(--text-muted);">${r.lastChecked ? formatDate(r.lastChecked) : 'hiç'}</td>
+      <td>
+        <div class="actions">
+          ${newCount > 0 ? `<button class="btn btn-sm btn-success" onclick="viewNewConnections('${r.slug}')">Görüntüle</button>` : ''}
+          <button class="btn btn-sm btn-danger" onclick="removeConnectionTarget('${r.slug}', '${escapeHtml(r.name || '')}')">Sil</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Stash reports for the detail modal.
+  window._connectionsReports = reports;
+}
+
+async function addConnectionTarget() {
+  const name = document.getElementById('input-conn-name').value.trim();
+  const profileUrl = document.getElementById('input-conn-url').value.trim();
+
+  if (!profileUrl.includes('linkedin.com/in/')) {
+    showToast('Geçerli bir LinkedIn profil URL gir (linkedin.com/in/...)', 'error');
+    return;
+  }
+
+  const result = await apiPost('/connections/targets', { name, profileUrl });
+  if (result.success) {
+    showToast('Kişi eklendi');
+    document.getElementById('input-conn-name').value = '';
+    document.getElementById('input-conn-url').value = '';
+    loadConnections();
+  } else {
+    showToast(result.error || 'Eklenemedi', 'error');
+  }
+}
+
+async function removeConnectionTarget(slug, name) {
+  if (!confirm(`${name || 'Bu kişi'} takipten çıkarılsın mı?`)) return;
+  const result = await apiDelete(`/connections/targets/${slug}`);
+  if (result.success) {
+    showToast('Takipten çıkarıldı');
+    loadConnections();
+  } else {
+    showToast(result.error || 'Silinemedi', 'error');
+  }
+}
+
+async function runConnectionsCheck() {
+  const result = await apiPost('/connections/run', { email: false });
+  if (result.success) {
+    showToast('Kontrol başlatıldı. Bu işlem birkaç dakika sürebilir...');
+    updateRunButton(result.runState);
+    loadConnections();
+  } else {
+    showToast(result.error || 'Başlatılamadı', 'error');
+  }
+}
+
+function viewNewConnections(slug) {
+  const reports = window._connectionsReports || [];
+  const report = reports.find(r => r.slug === slug);
+  if (!report) return;
+
+  const modal = document.getElementById('leads-modal');
+  const body = document.getElementById('modal-body');
+  const footer = document.getElementById('modal-footer');
+  const title = document.getElementById('modal-title');
+
+  title.textContent = `${report.name} - ${report.newConnections.length} yeni bağlantı`;
+  body.innerHTML = report.newConnections.map(c => `
+    <div class="lead-item">
+      <div class="lead-avatar">${(c.fullName || '?')[0].toUpperCase()}</div>
+      <div class="lead-info">
+        <div class="lead-name">
+          ${c.profileUrl ? `<a href="${escapeHtml(c.profileUrl)}" target="_blank">${escapeHtml(c.fullName)}</a>` : escapeHtml(c.fullName)}
+        </div>
+        <div class="lead-title">${escapeHtml(c.headline || '')}</div>
+        <div class="lead-company">${escapeHtml(c.location || '')}</div>
+      </div>
+    </div>
+  `).join('');
+  footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal()">Kapat</button>`;
+  modal.classList.add('active');
 }
 
 // ==================== SETTINGS ====================

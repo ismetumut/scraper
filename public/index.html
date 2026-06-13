@@ -36,6 +36,12 @@
         </a>
       </li>
       <li>
+        <a href="#" data-page="connections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Connection Tracker
+        </a>
+      </li>
+      <li>
         <a href="#" data-page="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
           Settings
@@ -178,6 +184,64 @@
               </tr>
             </thead>
             <tbody id="my-lists-table-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CONNECTION TRACKER PAGE ==================== -->
+    <div id="page-connections" class="page" style="display:none;">
+      <div class="page-header">
+        <h2>Connection Tracker</h2>
+        <button class="btn btn-primary" id="btn-run-check" onclick="runConnectionsCheck()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Bugünü Kontrol Et
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Takip Edilecek Kişi Ekle
+        </div>
+        <p style="color: var(--text-secondary); font-size:14px; margin-bottom:20px;">
+          1. derece bağlantın olan ve bağlantı listesi herkese açık kişilerin profil URL'sini ekle.
+          Her gün yeni eklediği bağlantılar tespit edilir.
+        </p>
+        <div class="form-row">
+          <div class="form-group" style="flex:2;">
+            <label>İsim</label>
+            <input type="text" id="input-conn-name" placeholder="Ahmet Yılmaz">
+          </div>
+          <div class="form-group" style="flex:3;">
+            <label>LinkedIn Profil URL</label>
+            <input type="text" id="input-conn-url" placeholder="https://www.linkedin.com/in/ahmet-yilmaz/">
+          </div>
+          <button class="btn btn-primary" onclick="addConnectionTarget()">+ Ekle</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Takip Edilen Kişiler & Yeni Bağlantılar</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Kişi</th>
+                <th>Toplam Bağlantı</th>
+                <th>Yeni (son kontrol)</th>
+                <th>Son Kontrol</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="connections-table-body">
+              <tr><td colspan="5">
+                <div class="empty-state">
+                  <h3>Henüz kimse takip edilmiyor</h3>
+                  <p>Yukarıdan bir kişi ekleyerek başla</p>
+                </div>
+              </td></tr>
             </tbody>
           </table>
         </div>
