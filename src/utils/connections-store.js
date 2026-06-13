@@ -68,10 +68,43 @@ function diffConnections(previous, current) {
   });
 }
 
+/**
+ * Returns all snapshot dates for a person, sorted ascending (YYYY-MM-DD).
+ */
+function listSnapshotDates(slug) {
+  const dir = personDir(slug);
+  return fs.readdirSync(dir)
+    .filter(f => f.endsWith('.json'))
+    .map(f => f.replace('.json', ''))
+    .sort();
+}
+
+/**
+ * Loads a specific snapshot by date, or null if missing.
+ */
+function loadSnapshot(slug, date) {
+  const dir = personDir(slug);
+  const filePath = path.join(dir, `${date}.json`);
+  if (!fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
+
+/**
+ * Loads the most recent snapshot for a person, or null if none exist.
+ */
+function loadLatestSnapshot(slug) {
+  const dates = listSnapshotDates(slug);
+  if (dates.length === 0) return null;
+  return loadSnapshot(slug, dates[dates.length - 1]);
+}
+
 module.exports = {
   slugify,
   todayString,
   saveSnapshot,
   loadPreviousSnapshot,
+  loadLatestSnapshot,
+  loadSnapshot,
+  listSnapshotDates,
   diffConnections
 };

@@ -113,7 +113,26 @@ SMTP_FROM=your_email@gmail.com
 > Gmail kullaniyorsan normal sifre yerine bir "Uygulama Sifresi" (App Password)
 > olusturman gerekir.
 
-### 3. Scripti calistir
+### 3a. Web panelden yonet (kolay yol)
+
+Sunucuyu baslat ve panelden takip edilecek kisileri ekle/cikar, tek tikla
+kontrol calistir ve yeni baglantilari gor:
+
+```bash
+npm start
+```
+
+Tarayicida **http://localhost:3099** ac > sol menuden **"Connection Tracker"**:
+
+- **Kisi ekle:** isim + LinkedIn profil URL gir, "+ Ekle"
+- **Bugünü Kontrol Et:** tum takip edilen kisileri tarar, onceki gunle
+  karsilastirir ve yeni baglantilari tablo + "Görüntüle" ile gosterir
+- **Sil:** bir kisiyi takipten cikar
+
+Panelden eklenen kisiler `config/connections-targets.json` dosyasina yazilir,
+yani gunluk otomasyon (asagidaki GitHub Actions) ayni listeyi kullanir.
+
+### 3b. Scripti elle calistir
 
 ```bash
 npm run connections:check
