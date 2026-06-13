@@ -1,6 +1,7 @@
 const { getAuthenticatedPage } = require('./browser');
 const { humanDelay, randomDelay } = require('../utils/delay');
 const { saveResults } = require('../utils/store');
+const { autoScroll } = require('../utils/scroll');
 
 // Active scraping jobs tracker
 const activeJobs = new Map();
@@ -254,31 +255,6 @@ async function extractLeadsFromPage(page, pageNum) {
 
     return leads;
   }, pageNum);
-}
-
-async function autoScroll(page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve) => {
-      let totalHeight = 0;
-      const distance = 300;
-      const timer = setInterval(() => {
-        const scrollHeight = document.body.scrollHeight;
-        window.scrollBy(0, distance);
-        totalHeight += distance;
-
-        if (totalHeight >= scrollHeight - window.innerHeight) {
-          clearInterval(timer);
-          resolve();
-        }
-      }, 200);
-
-      // Safety timeout
-      setTimeout(() => {
-        clearInterval(timer);
-        resolve();
-      }, 10000);
-    });
-  });
 }
 
 /**
