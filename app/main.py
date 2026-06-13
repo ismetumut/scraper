@@ -117,6 +117,25 @@ def on_startup() -> None:
     init_db()
 
 
+@app.get("/")
+def root() -> dict[str, Any]:
+    return {
+        "service": "lead-list-manager",
+        "status": "ok",
+        "docs": "/docs",
+        "endpoints": [
+            "GET /health",
+            "POST /imports",
+            "GET /imports/{import_id}",
+            "POST /imports/{import_id}/map",
+            "POST /imports/{import_id}/process",
+            "GET /leads",
+            "POST /exports",
+            "GET /exports/latest",
+        ],
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "lead-list-manager"}
