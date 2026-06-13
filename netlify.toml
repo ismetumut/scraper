@@ -1,13 +1,11 @@
 [build]
   functions = "netlify/functions"
 
-[build.environment]
-  PYTHON_VERSION = "3.11"
-
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
 
-# All traffic is handled by the FastAPI app running inside the Python function.
+# All traffic is handled by the Lead List Manager API (Node function).
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/api/:splat"
